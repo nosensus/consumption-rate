@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { font-family: 'Inter', system-ui, sans-serif; }
+  body { background-color: #F0F2FA; color: #1A1F3C; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#4F73F7] text-white text-sm font-semibold hover:bg-[#3B5FE0] transition-colors;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#E0E5F5] bg-white text-[#1A1F3C] text-sm font-semibold hover:bg-[#F5F7FF] transition-colors;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-[#6B7A99] hover:bg-[#F0F2FA] transition-colors;
+  }
+  .card {
+    @apply bg-white rounded-2xl border border-[#E8EBF7] shadow-[0_2px_8px_rgba(79,115,247,0.06)];
+  }
+  .input {
+    @apply w-full rounded-lg border border-[#E0E5F5] bg-white px-3.5 py-2.5 text-sm text-[#1A1F3C] placeholder-[#9BA8C0] focus:outline-none focus:ring-2 focus:ring-[#4F73F7]/30 focus:border-[#4F73F7] transition-all;
+  }
+  .label {
+    @apply block text-sm font-medium text-[#4A5578] mb-1.5;
+  }
+}
