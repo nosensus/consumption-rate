@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, NavLink, Link, useLocation } from 'react-router-dom'
+import { HashRouter, Routes, Route, NavLink, Link, useLocation } from 'react-router-dom'
 import { LayoutDashboard, ClipboardList, BookOpen, Bell, Plus, BarChart3, Settings, AlertTriangle } from 'lucide-react'
 import { useStore } from './store/useStore'
 import { ToastContainer } from './components/ui/Toast'
@@ -156,5 +156,5 @@ function AppLoader() {
 }
 
 export default function App() {
-  return <BrowserRouter><AppLoader /></BrowserRouter>
+  return <HashRouter><AppLoader /></HashRouter>
 }
