@@ -4,6 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Нормы расхода — Прототип</title>
+    <script>
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var p = params.get('p');
+        if (p) {
+          var q = params.get('q');
+          var url = window.location.pathname.replace(/\/$/, '') + '/' +
+            p.replace(/~and~/g, '&') +
+            (q ? '?' + q.replace(/~and~/g, '&') : '') +
+            window.location.hash;
+          window.history.replaceState(null, null, url);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
