@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { useStore } from '../../store/useStore'
 import { ObjectModal } from '../../components/modals/ObjectModal'
 import { ResourceModal } from '../../components/modals/ResourceModal'
@@ -233,32 +233,12 @@ function ResourcesTab() {
   )
 }
 
-const TABS = [
-  { id: 'objects',   label: 'Объекты учёта' },
-  { id: 'resources', label: 'Ресурсы'        },
-]
-
 export function References() {
   const { tab } = useParams<{ tab?: string }>()
-  const navigate = useNavigate()
   const activeTab = tab === 'resources' ? 'resources' : 'objects'
-
-  const switchTab = (id: string) => navigate(`/references/${id}`, { replace: true })
 
   return (
     <div className="space-y-5">
-      <div className="flex gap-1 border-b border-[#E8EBF7]">
-        {TABS.map(t => (
-          <button key={t.id} onClick={() => switchTab(t.id)}
-            className={`px-5 py-2.5 text-sm font-semibold transition-all border-b-2 -mb-px
-              ${activeTab === t.id
-                ? 'border-[#4F73F7] text-[#4F73F7]'
-                : 'border-transparent text-[#6B7A99] hover:text-[#1A1F3C]'}`}>
-            {t.label}
-          </button>
-        ))}
-      </div>
-
       {activeTab === 'objects'   && <ObjectsTab />}
       {activeTab === 'resources' && <ResourcesTab />}
     </div>
