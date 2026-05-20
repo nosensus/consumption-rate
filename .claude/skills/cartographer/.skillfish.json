@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "cartographer",
+  "owner": "olioapps",
+  "repo": "claude-code-plugins",
+  "path": "cartographer",
+  "branch": "main",
+  "sha": "6900935075d3684929aa6ecb9f3337d9faa05759",
+  "source": "manual"
+}
