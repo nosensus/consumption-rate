@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 import { AccountingObject, ConsumptionNorm, NormEvent, ObjectType, Resource, ResourceTypeEntity, NormTypeEntity } from '../types'
+import { CostNorm, EquipmentNorm } from '../pages/CostWizard/types'
+import { DEMO_COST_NORMS, DEMO_EQUIPMENT_NORMS } from '../pages/CostWizard/demoData'
 import { fakeApi } from '../api/fakeApi'
 
 interface Toast {
@@ -16,6 +18,8 @@ interface StoreState {
   resources: Resource[]
   norms: ConsumptionNorm[]
   events: NormEvent[]
+  costNorms: CostNorm[]
+  equipmentNorms: EquipmentNorm[]
   toasts: Toast[]
   loading: boolean
 
@@ -39,6 +43,13 @@ interface StoreState {
   updateNorm: (id: string, data: Partial<ConsumptionNorm>) => Promise<void>
   deleteNorm: (id: string) => Promise<void>
   addEvent: (data: Omit<NormEvent, 'id' | 'createdAt'>) => Promise<void>
+  addCostNorm: (data: Omit<CostNorm, 'id' | 'createdAt'>) => void
+  updateCostNorm: (id: string, data: Partial<Omit<CostNorm, 'id' | 'createdAt'>>) => void
+  deleteCostNorm: (id: string) => void
+  addEquipmentNorm: (data: Omit<EquipmentNorm, 'id' | 'createdAt'>) => EquipmentNorm
+  updateEquipmentNorm: (id: string, data: Partial<Omit<EquipmentNorm, 'id' | 'createdAt'>>) => void
+  deleteEquipmentNorm: (id: string) => void
+  linkEquipmentToProducts: (equipmentId: string, productIds: string[]) => void
   reset: () => Promise<void>
   showToast: (message: string, type?: 'success' | 'error') => void
   dismissToast: (id: string) => void
@@ -52,6 +63,8 @@ export const useStore = create<StoreState>((set, get) => ({
   resources: [],
   norms: [],
   events: [],
+  costNorms: DEMO_COST_NORMS,
+  equipmentNorms: DEMO_EQUIPMENT_NORMS,
   toasts: [],
   loading: false,
 
@@ -185,6 +198,67 @@ export const useStore = create<StoreState>((set, get) => ({
       norms: updatedNorm ? s.norms.map(n => n.id === data.normId ? updatedNorm : n) : s.norms,
     }))
     get().showToast('Событие зафиксировано')
+  },
+
+  addCostNorm: (data) => {
+    const norm: CostNorm = {
+      ...data,
+      id: Math.random().toString(36).slice(2),
+      createdAt: new Date().toISOString(),
+    }
+    set(s => ({ costNorms: [norm, ...s.costNorms] }))
+    get().showToast(`Норма расходов «${norm.product.name || 'Продукт'}» сохранена`)
+  },
+
+  updateCostNorm: (id, data) => {
+    set(s => ({ costNorms: s.costNorms.map(n => n.id === id ? { ...n, ...data } : n) }))
+  },
+
+  deleteCostNorm: (id) => {
+    set(s => ({ costNorms: s.costNorms.filter(n => n.id !== id) }))
+    get().showToast('Норма удалена')
+  },
+
+  addEquipmentNorm: (data) => {
+    const norm: EquipmentNorm = {
+      ...data,
+      id: Math.random().toString(36).slice(2),
+      createdAt: new Date().toISOString(),
+    }
+    set(s => ({ equipmentNorms: [norm, ...s.equipmentNorms] }))
+    get().showToast(`Оборудование «${norm.name || 'Норма Гр.Б'}» сохранено`)
+    return norm
+  },
+
+  linkEquipmentToProducts: (equipmentId, productIds) => {
+    set(s => ({
+      costNorms: s.costNorms.map(n => {
+        const linked = n.linkedEquipmentIds ?? []
+        const shouldLink = productIds.includes(n.id)
+        if (shouldLink && !linked.includes(equipmentId)) {
+          return { ...n, linkedEquipmentIds: [...linked, equipmentId] }
+        } else if (!shouldLink && linked.includes(equipmentId)) {
+          return { ...n, linkedEquipmentIds: linked.filter(id => id !== equipmentId) }
+        }
+        return n
+      }),
+    }))
+  },
+
+  updateEquipmentNorm: (id, data) => {
+    set(s => ({ equipmentNorms: s.equipmentNorms.map(n => n.id === id ? { ...n, ...data } : n) }))
+    get().showToast('Оборудование обновлено')
+  },
+
+  deleteEquipmentNorm: (id) => {
+    set(s => ({
+      equipmentNorms: s.equipmentNorms.filter(n => n.id !== id),
+      costNorms: s.costNorms.map(n => ({
+        ...n,
+        linkedEquipmentIds: (n.linkedEquipmentIds ?? []).filter(eid => eid !== id),
+      })),
+    }))
+    get().showToast('Оборудование удалено')
   },
 
   reset: async () => {
