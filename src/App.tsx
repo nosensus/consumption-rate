@@ -85,7 +85,7 @@ function Layout() {
     <div className="min-h-screen bg-[#F0F2FA]">
       <Sidebar />
       <div className="ml-[60px]">
-        <main className="max-w-[1280px] mx-auto px-6 py-6">
+        <main className="max-w-[1600px] mx-auto px-6 py-6">
           <TopBar />
           <Routes>
             <Route path="/"              element={<Dashboard />} />

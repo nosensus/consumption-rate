@@ -30,6 +30,16 @@ function currencySymbol(code: string) {
   return CURRENCIES.find(c => c.code === code)?.symbol ?? code
 }
 
+// Винительный падеж единицы измерения после «на 1 …» (склонение полных слов)
+const UNIT_ACCUSATIVE: Record<string, string> = {
+  'упаковка': 'упаковку',
+  'услуга': 'услугу',
+  'партия': 'партию',
+}
+function unitAccusative(unit: string) {
+  return UNIT_ACCUSATIVE[unit] ?? unit
+}
+
 const DEFAULT_PRODUCT: CostProduct = {
   name: '', article: '', unit: 'шт', currency: 'UZS', outputVolume: 0,
   period: 'месяц', periodMonths: 0, workingDays: 0,
@@ -353,13 +363,6 @@ function ProductStep({ product, group, onChange, onNext, onBack }: {
               </select>
             </F>
 
-            <F label="Период нормирования"
-              hint="За какой период указан плановый объём выпуска.">
-              <select className="input" value={product.period} onChange={e => set('period', e.target.value)}>
-                {['день', 'месяц', 'квартал', 'полугодие', 'год'].map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
-            </F>
-
             <F label="Плановый объём выпуска за период" required
               hint="⚠ Ключевой параметр! Стоимость на 1 ед. = стоимость за период ÷ этот объём.">
               <div className="flex gap-2 items-center">
@@ -373,6 +376,15 @@ function ProductStep({ product, group, onChange, onNext, onBack }: {
                 <span className="text-sm text-[#6B7A99] whitespace-nowrap">{product.unit}</span>
               </div>
             </F>
+
+            <F label="Период нормирования"
+              hint="За какой период указан плановый объём выпуска.">
+              <select className="input" value={product.period} onChange={e => set('period', e.target.value)}>
+                {['день', 'месяц', 'квартал', 'полугодие', 'год'].map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </F>
+
+
           </>}
 
           {/* ── Группа Б: объект нормирования ─────────────────── */}
@@ -765,8 +777,11 @@ function CategoryTable({ cat, rows, product, priceMultiplier = 1, convCurrency, 
         <thead>
           <tr className="bg-[#F8F9FF] border-b border-[#E8EBF7]">
             <th className={`${TH} text-left w-[180px]`}>Наименование</th>
+            {isA && <th className={`${TH} text-left w-[150px]`}>Тех. параметры</th>}
             <th className={`${TH} text-left w-16`}>Ед.</th>
-            <th className={`${TH} text-right w-24`}>{cat.field1Label}</th>
+            <th className={`${TH} text-right w-24`}>
+              {isA ? <>Норма на 1 {unitAccusative(product.unit)}<br />продукта</> : cat.field1Label}
+            </th>
             {cat.field2Label && (
               <th className={`${TH} text-right w-20`}>
                 {cat.field2Label}{cat.field2Unit ? ` (${cat.field2Unit})` : ''}
@@ -803,6 +818,14 @@ function CategoryTable({ cat, rows, product, priceMultiplier = 1, convCurrency, 
                       className="w-full px-2 py-1.5 text-xs border border-[#E0E5F5] rounded-lg bg-white focus:outline-none focus:border-[#4F73F7] focus:ring-1 focus:ring-[#4F73F7]/30"
                       placeholder="Наименование" />
                   </td>
+                  {isA && (
+                    <td className="px-2 py-1.5">
+                      <input value={row.article}
+                        onChange={e => onUpdate(row.id, { article: e.target.value })}
+                        className="w-full px-2 py-1.5 text-xs border border-[#E0E5F5] rounded-lg bg-white focus:outline-none focus:border-[#4F73F7] focus:ring-1 focus:ring-[#4F73F7]/30"
+                        placeholder="размер, марка, цвет…" />
+                    </td>
+                  )}
                   <td className="px-2 py-1.5">
                     <select value={UNIT_OPTIONS.includes(row.unit) ? row.unit : (row.unit || UNIT_OPTIONS[0])}
                       onChange={e => onUpdate(row.id, { unit: e.target.value })}
